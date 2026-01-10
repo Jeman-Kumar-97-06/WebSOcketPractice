@@ -31,7 +31,7 @@ function App() {
     <>
       {/* Div that shows to and from messages */}
       <div id='message-container'></div>
-      <form id='form'>
+      <form id='form' onSubmit={handleOnSubmit}>
         {/* Message input */}
         <label for='message-input'>Message</label>
         <input type='text' id='message-input'/>
