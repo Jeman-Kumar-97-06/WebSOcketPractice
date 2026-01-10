@@ -1,0 +1,10 @@
+body{
+  background-color: gray;
+}
+#message-container{
+  width:500px;
+  height:500px;
+  border-color: white;
+  border-width: 1px;
+  border-style: solid;
+}
