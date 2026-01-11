@@ -13,5 +13,10 @@ upgrade handler and assigns that server controller to 'io'.
 const io = require('socket.io')(3000,{cors:{origin:['http://localhost:5173']}}) //Here 'io' is the socker server.
 
 io.on('connection',socket=>{
-    console.log(socket.id)
+    // socket.on('custom-event',(number,string,eve)=>{
+    //     console.log(number,string,eve)
+    // })
+    socket.on('send-message',(msg)=>{
+        socket.broadcast.emit('receive-message',msg);
+    })
 })
