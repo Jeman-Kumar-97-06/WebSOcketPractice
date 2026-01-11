@@ -8,38 +8,64 @@ function App() {
   const messageInput   = useRef();
   const roomInput      = useRef();
   const socketRef      = useRef(null);
+  const userSocketRef  = useRef(null);
 
   useEffect(()=>{
     socketRef.current= io('http://localhost:3000');
+    userSocketRef.current = io('http://localhost:3000/user',{auth:{}});
     socketRef.current.on('connect',()=>{
       displayMessage(`You connected with id: ${socketRef.current.id}`)
     });
+
+    userSocketRef.current.on('connect_error',error=>{
+      alert(error)
+    })
 
     // socket.emit('custom-event',10,'HI',{a:'shit'})
     socketRef.current.on('receive-message',message=>{
       displayMessage(message)
     })
+
+    //KEYDOWN HANDLER:
+    const keyHandler= (e) => {
+      if (e.target.matches('input')) {
+        return;
+      }
+      if(e.key === 'c'){
+        socketRef.current.connect();
+      }
+      if(e.key === 'd'){
+        socketRef.current.disconnect();
+      }
+    }
+
+    document.addEventListener('keydown',keyHandler);
+
     //The function returned below is a cleanup function. It runs when component unmounts or when there's a hot reload.
     return () => {
+      document.removeEventListener('keydown',keyHandler);
       socketRef.current.disconnect();
+      userSocketRef.current.disconnect();
     }
   },[]);
 
   const handleOnSubmit = async (e) => {
     e.preventDefault();
     const message = messageInput.current.value;
-    const room    = roomInput.value;
+    const room    = roomInput.current.value;
     if (message == ''){
       return;
     }
     displayMessage(message);
-    socketRef.current.emit('send-message',message);
+    socketRef.current.emit('send-message',message,room);
     messageInput.current.value= '';
   }
 
   const onJoinRoomClick =  () => {
     const room = roomInput.current.value;
-    console.log(room);
+    socketRef.current.emit('join-room',room,msg=>{
+      displayMessage(msg)
+    });
   }
 
   function displayMessage(message) {
